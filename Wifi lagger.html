@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiFi Slowdown Simulator</title>
+    <script>
+        // Define a function to simulate intricate network slowdown
+        function slowDownWiFi() {
+            const baseNetworkSpeed = 20; // Base network speed in milliseconds
+            const maxDelayFactor = 5; // Maximum delay factor for increased slowdown
+            const githubRepoEndpoint = 'https://raw.githubusercontent.com/ZDStudios/Wi-Fi-FILES/main/'; // GitHub repo endpoint
+
+            // Function to introduce variable delays
+            const introduceVariableDelay = () => {
+                const randomDelay = Math.random() * baseNetworkSpeed;
+                return new Promise(resolve => setTimeout(resolve, randomDelay));
+            };
+
+            // Simulate network slowdown by delaying requests
+            setInterval(async () => {
+                // Introduce a variable delay before each request
+                await introduceVariableDelay();
+
+                // Simulate network latency by introducing delays in requests
+                const filesToFetch = ['I.txt', 'ALL 2.zip', 'ALL 3.zip', 'ALL 4.zip', 'ALL 5.zip'];
+
+                // Fetch five files concurrently
+                const fetchPromises = filesToFetch.map(file => {
+                    return new Promise(resolve => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('GET', `${githubRepoEndpoint}${file}`, true);
+                        xhr.onload = () => resolve(xhr.responseText);
+                        xhr.send();
+                    });
+                });
+
+                // Alternatively, introduce delays in other network-related operations
+
+                // Wait for all files to be fetched
+                await Promise.all(fetchPromises);
+
+            }, baseNetworkSpeed * maxDelayFactor);
+        }
+
+        // Call the function to initiate a more complex WiFi slowdown
+        slowDownWiFi();
+    </script>
+</head>
+<body>
+    <h1>WiFi Slowdown Simulator</h1>
+    <!-- Add any additional HTML content or structure as needed -->
+</body>
+</html>
