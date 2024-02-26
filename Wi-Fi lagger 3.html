@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiFi Slowdown Simulator</title>
+    <style>
+        #speedBox {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 20px;
+            text-align: center;
+        }
+
+        #ipBox {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 20px;
+            text-align: center;
+        }
+    </style>
+    <script>
+        // Define a function to simulate intricate network slowdown
+        function slowDownWiFi() {
+            const baseNetworkSpeed = 20; // Base network speed in milliseconds
+            const maxDelayFactor = 5; // Maximum delay factor for increased slowdown
+            const githubRepoEndpoint = 'https://raw.githubusercontent.com/ZDStudios/Wi-Fi-FILES/main/'; // GitHub repo endpoint
+            let slowdownInterval;
+
+            // Function to introduce variable delays
+            const introduceVariableDelay = () => {
+                const randomDelay = Math.random() * baseNetworkSpeed;
+                return new Promise(resolve => setTimeout(resolve, randomDelay));
+            };
+
+            // Function to update speed display
+            const updateSpeedDisplay = (uploadSpeed, downloadSpeed) => {
+                const speedBox = document.getElementById('speedBox');
+                speedBox.innerHTML = `<p>Upload Speed: ${uploadSpeed.toFixed(2)} Mbps</p><p>Download Speed: ${downloadSpeed.toFixed(2)} Mbps</p>`;
+            };
+
+            // Function to initiate WiFi slowdown
+            const startWiFiSlowdown = () => {
+                slowdownInterval = setInterval(async () => {
+                    // Introduce a variable delay before each request
+                    await introduceVariableDelay();
+
+                    // Simulate network latency by introducing delays in requests
+                    const filesToFetch = Array.from({ length: 5 }, (_, index) => `file${index + 1}.txt`);
+
+                    // Fetch five files concurrently
+                    const fetchPromises = filesToFetch.map(file => {
+                        return new Promise(resolve => {
+                            const xhr = new XMLHttpRequest();
+                            xhr.open('GET', `${githubRepoEndpoint}${file}`, true);
+                            xhr.onload = () => resolve(xhr.responseText);
+                            xhr.send();
+                        });
+                    });
+
+                    // Simulate upload and download speeds
+                    const uploadSpeed = Math.random() * 10;
+                    const downloadSpeed = Math.random() * 50;
+
+                    // Display simulated speeds
+                    updateSpeedDisplay(uploadSpeed, downloadSpeed);
+
+                    // Wait for all files to be fetched
+                    await Promise.all(fetchPromises);
+
+                }, baseNetworkSpeed * maxDelayFactor);
+            };
+
+            // Function to stop WiFi slowdown
+            const stopWiFiSlowdown = () => {
+                clearInterval(slowdownInterval);
+            };
+
+            // Function to fetch and display user's IP address
+            const showIPAddress = async () => {
+                const ipBox = document.getElementById('ipBox');
+                ipBox.innerHTML = '<p>Loading...</p>';
+
+                try {
+                    const response = await fetch('https://api64.ipify.org?format=json');
+                    const data = await response.json();
+                    ipBox.innerHTML = `<p>Your IP Address: ${data.ip}</p>`;
+                } catch (error) {
+                    console.error('Error fetching IP address:', error);
+                    ipBox.innerHTML = '<p>Unable to fetch IP address</p>';
+                }
+            };
+
+            return { startWiFiSlowdown, stopWiFiSlowdown, showIPAddress };
+        }
+
+        // Call the function to initiate WiFi slowdown
+        const wifiSimulator = slowDownWiFi();
+    </script>
+</head>
+<body>
+    <h1>WiFi Slowdown Simulator</h1>
+    <button onclick="wifiSimulator.startWiFiSlowdown()">Start WiFi Slowdown</button>
+    <button onclick="wifiSimulator.stopWiFiSlowdown()">Stop WiFi Slowdown</button>
+    <div id="speedBox"></div>
+    <button onclick="wifiSimulator.showIPAddress()">Show IP Address</button>
+    <div id="ipBox"></div>
+    <!-- Add any additional HTML content or structure as needed -->
+</body>
+</html>
